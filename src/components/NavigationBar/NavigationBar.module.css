@@ -1,0 +1,14 @@
+.navigationBarStyle {
+    background-color: #ffffff;
+    color: black;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .navigationTitle {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+  

@@ -1,0 +1,24 @@
+# Node modules
+/node_modules/
+
+# Build output
+/dist/
+/build/
+
+# Webpack bundle
+/bundle.js
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# npm package lock
+package-lock.json
+
+# IDE or editor files
+.vscode/
+.idea/
+*.swp
