@@ -5,6 +5,7 @@ class CanvasManager {
         this.viewportOffset = { x: 0, y: 0 }
         this.scale = 1
         this.images = []
+        this.canvas.addEventListener('wheel', this.onWheel.bind(this))
     }
 
     resizeCanvas() {
@@ -42,7 +43,7 @@ class CanvasManager {
         }
     }
 
-    drawImages(images) {
+    drawImages() {
         this.ctx.save()
         this.ctx.scale(this.scale, this.scale)
 
@@ -59,6 +60,38 @@ class CanvasManager {
         }
 
         this.ctx.restore()
+    }
+
+    onWheel(e) {
+        if (e.ctrlKey) {
+            e.preventDefault()
+            e.stopPropagation()
+            const mouseX = e.clientX
+            const mouseY = e.clientY
+
+            const zoomCenterX = (mouseX - this.viewportOffset.x) / this.scale
+            const zoomCenterY = (mouseY - this.viewportOffset.y) / this.scale
+
+            const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9
+            const newScale = this.scale * zoomFactor
+
+            if (newScale > 0.1 && newScale < 5) {
+                this.scale = newScale
+
+                this.viewportOffset.x = mouseX - zoomCenterX * this.scale
+                this.viewportOffset.y = mouseY - zoomCenterY * this.scale
+
+                this.redrawCanvas()
+            }
+        } else if (e.shiftKey) {
+            e.preventDefault()
+            this.viewportOffset.x -= e.deltaY
+            this.redrawCanvas()
+        } else {
+            e.preventDefault()
+            this.viewportOffset.y -= e.deltaY
+            this.redrawCanvas()
+        }
     }
 }
 
