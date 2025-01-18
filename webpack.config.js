@@ -1,7 +1,8 @@
+const { watch } = require('fs')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, '/index.html'),
+    template: path.resolve(__dirname, 'index.html'),
     filename: 'index.html',
     inject: 'body',
 })

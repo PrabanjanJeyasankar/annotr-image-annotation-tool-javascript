@@ -1,8 +1,6 @@
-import { NavigationBar } from './components/NavigationBar/NavigationBar'
+import { initializeCanvas } from './components/canvas/canvas'
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('app')
-    const navbar = NavigationBar()
-
-    app.appendChild(navbar)
+    initializeCanvas(app) 
 })
