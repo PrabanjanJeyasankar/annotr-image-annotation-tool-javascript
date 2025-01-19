@@ -1,0 +1,91 @@
+.annotationForm {
+    font-family: 'Inter';
+    background: var(--color-background-violet-light);
+    padding: 0.8rem;
+    border-radius: 0.6rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.annotationContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.annotationMain {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.annotationTextarea {
+    width: 100%;
+    max-height: 60px;
+    padding: 12px;
+    background: var(--color-background-violet-light);
+    border: none;
+    resize: none;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.annotationTextarea:focus {
+    outline: none;
+}
+
+.annotationTextarea[readonly] {
+    cursor: default;
+}
+
+.annotationControls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.8rem;
+}
+
+.leftControls {
+    display: none;
+    gap: 8px;
+}
+
+.rightControls {
+    margin-left: auto;
+}
+
+.actionButton {
+    padding: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+}
+
+.actionButton:hover {
+    background: #f8f9fa;
+}
+
+.editButton {
+    color: var(--color-dar-violet);
+}
+
+.deleteButton {
+    color: var(--color-primary-red);
+}
+
+.primaryButton {
+    padding: 6px 16px;
+    background: var(--color-primary-violet);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.primaryButton:hover {
+    opacity: 0.7;
+}

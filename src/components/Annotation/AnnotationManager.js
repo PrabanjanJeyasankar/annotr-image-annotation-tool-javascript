@@ -1,8 +1,8 @@
 import AnnotationEvents from '../../utils/AnnotationEvents'
 import { Annotation } from '../../utils/Types.js'
 import styles from './Annotation.module.css'
-import AnnotationForm from './AnnotationForm'
-import AnnotationRenderer from './AnnotationRenderer'
+import AnnotationForm from '../Annotation/AnnotationForm/AnnotationForm.js'
+import AnnotationRenderer from '../Annotation/AnnotationRenderer.js'
 import AnnotationStore from './AnnotationStore'
 
 class AnnotationManager {
