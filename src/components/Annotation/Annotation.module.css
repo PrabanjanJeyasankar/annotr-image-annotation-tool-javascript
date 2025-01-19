@@ -9,7 +9,6 @@
     z-index: 1000;
 }
 
-
 .moveCursor {
     cursor: move;
 }
@@ -36,4 +35,167 @@
 
 .annotationDot:hover {
     transform: translate(-50%, -50%) scale(1.2);
+}
+
+.annotationForm {
+    position: fixed;
+    display: none;
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    min-width: 200px;
+    max-width: 300px;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    resize: vertical;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.saveButton,
+.updateButton {
+    background-color: #6366f1;
+    color: white;
+    padding: 6px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.saveButton:hover,
+.updateButton:hover {
+    background-color: #4f46e5;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.header span {
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.headerActions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.iconButton {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconButton:hover {
+    background-color: #f1f5f9;
+}
+
+.iconButton img {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+}
+
+.iconButton:hover img {
+    opacity: 1;
+}
+
+.annotationForm {
+    position: fixed;
+    display: none;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 300px;
+    box-sizing: border-box;
+}
+
+.annotationTextarea {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 10px;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: none;
+}
+
+.annotationActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.iconButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconButton svg {
+    width: 16px;
+    height: 16px;
+    fill: #555;
+    transition: fill 0.2s ease;
+}
+
+.iconButton:hover svg {
+    fill: #333;
+}
+
+.updateButton,
+.saveButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.updateButton:hover,
+.saveButton:hover {
+    background-color: #0056b3;
 }
