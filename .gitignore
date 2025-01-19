@@ -2,11 +2,9 @@
 /node_modules/
 
 # Build output
-/dist/
 /build/
 
 # Webpack bundle
-/bundle.js
 
 # Logs
 *.log

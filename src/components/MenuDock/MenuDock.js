@@ -27,7 +27,7 @@ function MenuDock(canvasManager) {
     dock.appendChild(handButton)
     dock.appendChild(annotationButton)
     dock.appendChild(deleteButton)
-    dock.appendChild(tooltip) 
+    dock.appendChild(tooltip)
 
     tooltip.style.display = 'block'
 
@@ -50,7 +50,7 @@ function MenuDock(canvasManager) {
             deleteButton,
         ])
         manager.setActiveTool('hand')
-        tooltip.style.display = 'none' 
+        tooltip.style.display = 'none'
     }
 
     annotationButton.onclick = function () {
@@ -61,7 +61,7 @@ function MenuDock(canvasManager) {
             deleteButton,
         ])
         manager.setActiveTool('annotation')
-        tooltip.style.display = 'block' 
+        tooltip.style.display = 'block'
     }
 
     deleteButton.onclick = function () {
@@ -72,12 +72,11 @@ function MenuDock(canvasManager) {
             deleteButton,
         ])
         manager.setActiveTool('delete')
-        tooltip.style.display = 'block' 
+        tooltip.style.display = 'block'
     }
 
     applyHoverEffect([arrowButton, handButton, annotationButton, deleteButton])
 
-    
     return dock
 }
 

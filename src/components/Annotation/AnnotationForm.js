@@ -1,4 +1,4 @@
-import styles from './Annotation.module.css'
+import AnnotationEvents from '../../utils/AnnotationEvents'
 
 class AnnotationForm {
     constructor() {
@@ -8,23 +8,18 @@ class AnnotationForm {
     }
 
     _createFormElement() {
-        const form = document.createElement('div');
-        form.className = styles.annotationForm; // Apply the CSS module class
+        const form = document.createElement('div')
+        form.className = 'annotation-form'
         form.innerHTML = `
-            <textarea class="${styles.annotationTextarea}" placeholder="Enter annotation..."></textarea>
-            <div class="${styles.annotationActions}">
-                <button class="${styles.iconButton} ${styles.deleteButton}" data-action="delete" style="display: none;">
-                    ${this._loadSVG('../../svg/TrashSvg.js')}
-                </button>
-                <button class="${styles.iconButton} ${styles.editButton}" data-action="edit" style="display: none;">
-                    ${this._loadSVG('../../svg/EditPenSvg.js')}
-                </button>
-                <button class="${styles.updateButton}" data-action="update" style="display: none;">Update</button>
-                <button class="${styles.saveButton}" data-action="save">Save</button>
+            <textarea class="annotation-textarea" placeholder="Enter annotation..."></textarea>
+            <div class="annotation-actions">
+                <button class="save-btn">Save</button>
+                <button class="cancel-btn">Cancel</button>
             </div>
-        `;
-        document.body.appendChild(form);
-        return form;
+        `
+        form.style.cssText = this._getFormStyles()
+        document.body.appendChild(form)
+        return form
     }
 
     _getFormStyles() {
@@ -36,44 +31,22 @@ class AnnotationForm {
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
-            width: 300px;
         `
     }
 
     _setupEventListeners() {
-        const saveButton = this.element.querySelector('.saveButton')
-        const updateButton = this.element.querySelector('.updateButton')
-        const deleteButton = this.element.querySelector('.deleteButton')
-        const editButton = this.element.querySelector('.editButton')
+        const saveBtn = this.element.querySelector('.save-btn')
+        const cancelBtn = this.element.querySelector('.cancel-btn')
 
-        saveButton.addEventListener('click', () => this._handleSave())
-        updateButton.addEventListener('click', () => this._handleUpdate())
-        deleteButton.addEventListener('click', () => this._handleDelete())
-        editButton.addEventListener('click', () => this._handleEdit())
+        saveBtn.addEventListener('click', () => this._handleSave())
+        cancelBtn.addEventListener('click', () => this.hide())
     }
 
     show(position, existingAnnotation = null) {
         this.currentAnnotation = existingAnnotation
 
-        const textarea = this.element.querySelector('.annotationTextarea')
-        const deleteButton = this.element.querySelector('.deleteButton')
-        const editButton = this.element.querySelector('.editButton')
-        const updateButton = this.element.querySelector('.updateButton')
-        const saveButton = this.element.querySelector('.saveButton')
-
-        if (existingAnnotation) {
-            textarea.value = existingAnnotation.content
-            deleteButton.style.display = 'inline-flex'
-            editButton.style.display = 'inline-flex'
-            updateButton.style.display = 'inline-flex'
-            saveButton.style.display = 'none'
-        } else {
-            textarea.value = ''
-            deleteButton.style.display = 'none'
-            editButton.style.display = 'none'
-            updateButton.style.display = 'none'
-            saveButton.style.display = 'inline-flex'
-        }
+        const textarea = this.element.querySelector('.annotation-textarea')
+        textarea.value = existingAnnotation ? existingAnnotation.content : ''
 
         this.element.style.left = `${position.x}px`
         this.element.style.top = `${position.y}px`
@@ -88,51 +61,18 @@ class AnnotationForm {
 
     _handleSave() {
         const content = this.element
-            .querySelector('.annotationTextarea')
+            .querySelector('.annotation-textarea')
             .value.trim()
         if (!content) return
 
-        const event = new CustomEvent('annotation-save', {
-            detail: { content, annotation: this.currentAnnotation },
+        const event = new CustomEvent(AnnotationEvents.SAVE, {
+            detail: {
+                content,
+                annotation: this.currentAnnotation,
+            },
         })
         window.dispatchEvent(event)
         this.hide()
-    }
-
-    _handleUpdate() {
-        if (this.currentAnnotation) {
-            const content = this.element
-                .querySelector('.annotationTextarea')
-                .value.trim()
-            this.currentAnnotation.content = content
-
-            const event = new CustomEvent('annotation-update', {
-                detail: this.currentAnnotation,
-            })
-            window.dispatchEvent(event)
-            this.hide()
-        }
-    }
-
-    _handleDelete() {
-        if (this.currentAnnotation) {
-            const event = new CustomEvent('annotation-delete', {
-                detail: this.currentAnnotation,
-            })
-            window.dispatchEvent(event)
-            this.hide()
-        }
-    }
-
-    _handleEdit() {
-        this.element.querySelector('.annotationTextarea').focus()
-    }
-
-    _loadSVG(filePath) {
-        // Load SVG as a string (e.g., via fetch or file loader)
-        return `
-            <img src="${filePath}" alt="icon" />
-        `
     }
 }
 
