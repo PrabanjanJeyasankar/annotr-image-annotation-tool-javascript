@@ -6,6 +6,7 @@ class AnnotationForm {
         this.element = this._createFormElement()
         this.currentAnnotation = null
         this.isEditing = false
+        this.visible = false
         this._setupEventListeners()
     }
 
@@ -94,9 +95,13 @@ class AnnotationForm {
     }
 
     _setupEventListeners() {
-        const saveButton = this.element.querySelector(`.${styles.primaryButton}`)
+        const saveButton = this.element.querySelector(
+            `.${styles.primaryButton}`
+        )
         const editButton = this.element.querySelector(`.${styles.editButton}`)
-        const deleteButton = this.element.querySelector(`.${styles.deleteButton}`)
+        const deleteButton = this.element.querySelector(
+            `.${styles.deleteButton}`
+        )
 
         saveButton.addEventListener('click', () => this._handleSave())
         editButton.addEventListener('click', () => this._handleEdit())
@@ -106,6 +111,7 @@ class AnnotationForm {
     show(position, existingAnnotation = null) {
         this.currentAnnotation = existingAnnotation
         this.isEditing = !existingAnnotation
+        this.visible = true
 
         const textarea = this.element.querySelector(
             `.${styles.annotationTextarea}`
@@ -113,7 +119,9 @@ class AnnotationForm {
         const leftControls = this.element.querySelector(
             `.${styles.leftControls}`
         )
-        const primaryButton = this.element.querySelector(`.${styles.primaryButton}`)
+        const primaryButton = this.element.querySelector(
+            `.${styles.primaryButton}`
+        )
 
         textarea.value = existingAnnotation ? existingAnnotation.content : ''
         textarea.readOnly = existingAnnotation ? true : false
@@ -133,6 +141,22 @@ class AnnotationForm {
         this.element.style.display = 'none'
         this.currentAnnotation = null
         this.isEditing = false
+        this.visible = false
+    }
+
+    isVisible() {
+        return this.visible
+    }
+
+    getCurrentAnnotation() {
+        return this.currentAnnotation
+    }
+
+    updatePosition(position) {
+        if (!this.element) return
+
+        this.element.style.left = `${position.x}px`
+        this.element.style.top = `${position.y}px`
     }
 
     _handleSave() {
@@ -160,7 +184,9 @@ class AnnotationForm {
         const textarea = this.element.querySelector(
             `.${styles.annotationTextarea}`
         )
-        const primaryButton = this.element.querySelector(`.${styles.primaryButton}`)
+        const primaryButton = this.element.querySelector(
+            `.${styles.primaryButton}`
+        )
 
         this.isEditing = true
         textarea.readOnly = false

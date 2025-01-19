@@ -1,8 +1,8 @@
 import AnnotationEvents from '../../utils/AnnotationEvents'
 import { Annotation } from '../../utils/Types.js'
-import styles from './Annotation.module.css'
 import AnnotationForm from '../Annotation/AnnotationForm/AnnotationForm.js'
 import AnnotationRenderer from '../Annotation/AnnotationRenderer.js'
+import styles from './Annotation.module.css'
 import AnnotationStore from './AnnotationStore'
 
 class AnnotationManager {
@@ -88,30 +88,16 @@ class AnnotationManager {
                 this.selectedAnnotation.position.x = newX
                 this.selectedAnnotation.position.y = newY
 
+                // Update form position when annotation is dragged
+                this._updateFormPosition(event.clientX, event.clientY)
+
                 canvasManager.redrawCanvas()
             }
 
             return true
         }
-
-        if (hoveredAnnotation) {
-            this.tooltip.textContent = hoveredAnnotation.content
-            this.tooltip.style.display = 'block'
-            this.tooltip.style.left = `${event.clientX + 10}px`
-            this.tooltip.style.top = `${event.clientY + 10}px`
-            return true
-        } else {
-            this.tooltip.style.display = 'none'
-            if (!this.isDraggingAnnotation) {
-                this.canvas.style.cursor =
-                    canvasManager.activeTool === 'annotation'
-                        ? 'crosshair'
-                        : 'default'
-            }
-            return false
-        }
     }
-
+    
     handleMouseDown(event) {
         const canvasPoint = this._getCanvasPoint(event)
 
@@ -300,6 +286,15 @@ class AnnotationManager {
                 annotation.position.y += deltaY
             })
             this.redraw()
+        }
+    }
+
+    _updateFormPosition(screenX, screenY) {
+        if (this.form.isVisible()) {
+            this.form.updatePosition({
+                x: screenX + 10,
+                y: screenY + 10,
+            })
         }
     }
 

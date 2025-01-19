@@ -77,26 +77,19 @@ class CanvasManager {
 
         switch (this.activeTool) {
             case 'arrow':
-                // this.canvas.style.cursor = `url(${CustomArrowCursorSvg.arrow}) 12 12, auto`
                 this.canvas.style.cursor = 'arrow'
-                // this.canvas.style.cursor = `url("data:image/svg+xml,${encodeURIComponent(
-                //     CustomArrowCursorSvg.arrow
-                // )}") 12 12, auto`
                 break
-             case 'hand':
-                // Update cursor based on whether we're over an image
+            case 'hand':
                 const mouseX = this.prevX || 0
                 const mouseY = this.prevY || 0
                 const imageUnderCursor = this.getImageAtPosition(mouseX, mouseY)
-                this.canvas.style.cursor = imageUnderCursor || this.isDragging ? 'grab' : 'grab'
+                this.canvas.style.cursor =
+                    imageUnderCursor || this.isDragging ? 'grab' : 'grab'
                 break
             case 'annotation':
                 this.canvas.style.cursor = 'crosshair'
                 break
             case 'erase':
-                // this.canvas.style.cursor = `url("data:image/svg+xml,${encodeURIComponent(
-                //     CustomCursorsSvg.eraser
-                // )}") 12 12, auto`
                 this.canvas.style.cursor = 'pointer'
                 break
             default:
@@ -202,6 +195,28 @@ class CanvasManager {
                 const deltaY = (e.clientY - this.prevY) / this.scale
 
                 this.selectedImage.moveBy(deltaX, deltaY)
+
+                if (this.annotationManager.form.isVisible()) {
+                    const currentAnnotation =
+                        this.annotationManager.form.getCurrentAnnotation()
+                    if (
+                        currentAnnotation &&
+                        currentAnnotation.imageId === this.selectedImage.id
+                    ) {
+                        const annotationX =
+                            currentAnnotation.position.x * this.scale +
+                            this.viewportOffset.x
+                        const annotationY =
+                            currentAnnotation.position.y * this.scale +
+                            this.viewportOffset.y
+
+                        this.annotationManager.form.updatePosition({
+                            x: annotationX + 10,
+                            y: annotationY + 10,
+                        })
+                    }
+                }
+
                 this.redrawCanvas()
             } else if (this.isDragging) {
                 this.viewportOffset.x += e.clientX - this.prevX
@@ -292,6 +307,15 @@ class CanvasManager {
     }
 
     deleteImage(image) {
+        const isImageHaveAnyOpenForm =
+            this.annotationManager.form.isVisible() &&
+            this.annotationManager.form.getCurrentAnnotation()?.imageId ===
+                image.id
+
+        if (isImageHaveAnyOpenForm) {
+            this.annotationManager.form.hide()
+        }
+
         if (image.annotations) {
             image.annotations = []
         }
@@ -302,7 +326,6 @@ class CanvasManager {
         }
 
         this.redrawCanvas()
-
         this.checkButtonVisibility()
 
         const deleteEvent = new CustomEvent('imageDeleted', {

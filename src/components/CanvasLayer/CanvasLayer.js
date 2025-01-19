@@ -24,7 +24,15 @@ function InitializeCanvas(app) {
     `
     container.appendChild(logoContainer)
 
-    const placeholder = document.createElement('div')
+    const fileInput = document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.accept = 'image/*'
+    fileInput.className = styles.fileInput
+    fileInput.multiple = true
+    container.appendChild(fileInput)
+
+    const placeholder = document.createElement('button')
+    placeholder.type = 'button'
     placeholder.className = styles.placeholder
     placeholder.innerHTML = `
         <div class="${styles.placeholderContent}">
@@ -49,13 +57,6 @@ function InitializeCanvas(app) {
     `
     container.appendChild(uploadButton)
 
-    const fileInput = document.createElement('input')
-    fileInput.type = 'file'
-    fileInput.accept = 'image/*'
-    fileInput.className = styles.fileInput
-    fileInput.multiple = true
-    container.appendChild(fileInput)
-
     const scrollBackButton = document.createElement('button')
     scrollBackButton.textContent = 'Scroll Back to Content'
     scrollBackButton.className = styles.scrollBackButton
@@ -66,11 +67,29 @@ function InitializeCanvas(app) {
     app.appendChild(menuDockElement)
 
     const imageUploader = new ImageUploader(fileInput, canvasManager)
+
     const originalAddImage = canvasManager.addImage.bind(canvasManager)
     canvasManager.addImage = (...args) => {
         placeholder.style.display = 'none'
         return originalAddImage(...args)
     }
+
+    const triggerFileInput = () => {
+        fileInput.click()
+    }
+
+    placeholder.addEventListener('click', triggerFileInput)
+    placeholder.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            triggerFileInput()
+        }
+    })
+
+    placeholder.style.cursor = 'pointer'
+    placeholder.style.border = 'none'
+    placeholder.style.background = 'none'
+    placeholder.style.width = '100%'
+    placeholder.style.height = '100%'
 
     container.addEventListener('dragover', (e) => {
         e.preventDefault()
@@ -99,7 +118,14 @@ function InitializeCanvas(app) {
         }
     })
 
-    uploadButton.addEventListener('click', () => fileInput.click())
+    uploadButton.addEventListener('click', triggerFileInput)
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            placeholder.style.display = 'none'
+        }
+    })
+
     scrollBackButton.addEventListener('click', () => {
         canvasManager.scrollBackToContent()
     })

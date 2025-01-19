@@ -32,10 +32,17 @@
 }
 
 @font-face {
-    font-family: 'Virgil';
+    font-family: 'virgil';
     font-weight: 500;
     font-style: normal;
     src: url('./fonts/Virgil.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Excalifont';
+    font-weight: 500;
+    font-style: normal;
+    src: url('./fonts/Excalifont-Regular.woff2') format('woff2');
 }
 
 @font-face {
