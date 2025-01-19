@@ -71,7 +71,7 @@ function MenuDock(canvasManager) {
             annotationButton,
             deleteButton,
         ])
-        manager.setActiveTool('delete')
+        manager.setActiveTool('erase')
         tooltip.style.display = 'block'
     }
 

@@ -3,6 +3,7 @@ import ImageUploader from '../ImageUploader/ImageUploader.js'
 import MenuDock from '../MenuDock/MenuDock.js'
 import styles from './Canvas.module.css'
 import CanvasManager from './CanvasManager.js'
+import '../../assets/index.css'
 
 function InitializeCanvas(app) {
     app.style.overflow = 'hidden'

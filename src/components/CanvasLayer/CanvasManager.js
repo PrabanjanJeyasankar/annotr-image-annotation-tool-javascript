@@ -1,4 +1,3 @@
-import CustomArrowCursorSvg from '../../svg/CustomArrowCursorSvg'
 import AnnotationManager from '../Annotation/AnnotationManager'
 
 class CanvasManager {
@@ -19,6 +18,13 @@ class CanvasManager {
         this.activeTool = 'arrow'
         this.setActiveTool('arrow')
         this.updateCursor()
+
+        this.supportedTools = this.supportedTools || [
+            'arrow',
+            'hand',
+            'annotation',
+            'erase',
+        ]
 
         this.canvas.canvasManager = this
         this.annotationManager = new AnnotationManager(this.canvas, this)
@@ -75,16 +81,23 @@ class CanvasManager {
         switch (this.activeTool) {
             case 'arrow':
                 // this.canvas.style.cursor = `url(${CustomArrowCursorSvg.arrow}) 12 12, auto`
-                // this.canvas.style.cursor = `arrow`
-                this.canvas.style.cursor = `url("data:image/svg+xml,${encodeURIComponent(
-                    CustomArrowCursorSvg.arrow
-                )}") 12 12, auto`
+                this.canvas.style.cursor = 'arrow'
+                // this.canvas.style.cursor = `url("data:image/svg+xml,${encodeURIComponent(
+                //     CustomArrowCursorSvg.arrow
+                // )}") 12 12, auto`
                 break
             case 'hand':
-                this.canvas.style.cursor = 'grab'
+                // this.canvas.style.cursor = 'grab'
+                this.canvas.style.cursor = this.isDragging ? 'grabbing' : 'grab'
                 break
             case 'annotation':
                 this.canvas.style.cursor = 'crosshair'
+                break
+            case 'erase':
+                // this.canvas.style.cursor = `url("data:image/svg+xml,${encodeURIComponent(
+                //     CustomCursorsSvg.eraser
+                // )}") 12 12, auto`
+                this.canvas.style.cursor = 'no-drop'
                 break
             default:
                 this.canvas.style.cursor = 'default'
@@ -188,7 +201,6 @@ class CanvasManager {
                 const deltaX = (e.clientX - this.prevX) / this.scale
                 const deltaY = (e.clientY - this.prevY) / this.scale
 
-                // Move image and its annotations together
                 this.selectedImage.moveBy(deltaX, deltaY)
                 this.redrawCanvas()
             } else if (this.isDragging) {
@@ -219,6 +231,14 @@ class CanvasManager {
     onMouseDown(e) {
         this.prevX = e.clientX
         this.prevY = e.clientY
+
+        if (this.activeTool === 'erase') {
+            const clickedImage = this.getImageAtPosition(e.clientX, e.clientY)
+            if (clickedImage) {
+                this.deleteImage(clickedImage)
+                return
+            }
+        }
 
         const annotationHandled = this.annotationManager.handleMouseDown(e)
         if (annotationHandled) return
@@ -271,6 +291,26 @@ class CanvasManager {
         this.onMouseUp(e)
     }
 
+    deleteImage(image) {
+        if (image.annotations) {
+            image.annotations = []
+        }
+
+        const imageIndex = this.images.findIndex((img) => img === image)
+        if (imageIndex !== -1) {
+            this.images.splice(imageIndex, 1)
+        }
+
+        this.redrawCanvas()
+
+        this.checkButtonVisibility()
+
+        const deleteEvent = new CustomEvent('imageDeleted', {
+            detail: { imageId: image.id },
+        })
+        window.dispatchEvent(deleteEvent)
+    }
+
     getImageAtPosition(x, y) {
         return this.images.find((image) => {
             const imageX = image.x * this.scale + this.viewportOffset.x
@@ -282,6 +322,14 @@ class CanvasManager {
                 y <= imageY + image.height * this.scale
             )
         })
+    }
+
+    convertToCanvasCoordinates(clientX, clientY) {
+        const rect = this.canvas.getBoundingClientRect()
+        return {
+            x: (clientX - rect.left - this.viewportOffset.x) / this.scale,
+            y: (clientY - rect.top - this.viewportOffset.y) / this.scale,
+        }
     }
 
     checkButtonVisibility() {
@@ -328,14 +376,6 @@ class CanvasManager {
         this.redrawCanvas()
 
         this.checkButtonVisibility()
-    }
-
-    convertToCanvasCoordinates(clientX, clientY) {
-        const rect = this.canvas.getBoundingClientRect()
-        return {
-            x: (clientX - rect.left - this.viewportOffset.x) / this.scale,
-            y: (clientY - rect.top - this.viewportOffset.y) / this.scale,
-        }
     }
 }
 

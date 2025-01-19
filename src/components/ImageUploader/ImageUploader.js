@@ -46,7 +46,6 @@ class ImageUploader {
                     const centerY =
                         this.canvasManager.canvas.height / 2 - newHeight / 2
 
-                    // Create new ImageWithAnnotations instance
                     const imageWithAnnotations = new ImageWithAnnotations(
                         img,
                         centerX / this.canvasManager.scale,
@@ -55,7 +54,6 @@ class ImageUploader {
                         newHeight
                     )
 
-                    // Add to canvas manager's images array
                     this.canvasManager.images.push(imageWithAnnotations)
                     this.canvasManager.redrawCanvas()
                 }

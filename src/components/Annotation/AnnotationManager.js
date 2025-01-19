@@ -23,6 +23,10 @@ class AnnotationManager {
             AnnotationEvents.SAVE,
             this._handleSave.bind(this)
         )
+        window.addEventListener(
+            AnnotationEvents.DELETE,
+            this._handleDelete.bind(this)
+        )
         this.canvas.addEventListener(
             'mousemove',
             this.handleMouseMove.bind(this)
@@ -95,7 +99,6 @@ class AnnotationManager {
             this.tooltip.style.display = 'block'
             this.tooltip.style.left = `${event.clientX + 10}px`
             this.tooltip.style.top = `${event.clientY + 10}px`
-            this.canvas.style.cursor = 'grab'
             return true
         } else {
             this.tooltip.style.display = 'none'
@@ -110,25 +113,30 @@ class AnnotationManager {
     }
 
     handleMouseDown(event) {
-        const canvasManager = this.canvas.canvasManager
-        if (!canvasManager) return false
-
         const canvasPoint = this._getCanvasPoint(event)
+
         const clickedAnnotation = this._findClickedAnnotation(canvasPoint)
 
         if (clickedAnnotation) {
             event.preventDefault()
             event.stopPropagation()
 
-            this.isDraggingAnnotation = true
-            this.selectedAnnotation = clickedAnnotation
-
-            this.dragOffset = {
-                x: canvasPoint.x - clickedAnnotation.position.x,
-                y: canvasPoint.y - clickedAnnotation.position.y,
+            if (this.canvas.canvasManager.activeTool === 'annotation') {
+                this.form.show(
+                    {
+                        x: event.clientX + 10,
+                        y: event.clientY + 10,
+                    },
+                    clickedAnnotation
+                )
+            } else {
+                this.isDraggingAnnotation = true
+                this.selectedAnnotation = clickedAnnotation
+                this.dragOffset = {
+                    x: canvasPoint.x - clickedAnnotation.position.x,
+                    y: canvasPoint.y - clickedAnnotation.position.y,
+                }
             }
-
-            this.canvas.style.cursor = 'grabbing'
             return true
         }
 
@@ -161,7 +169,13 @@ class AnnotationManager {
         const clickedAnnotation = this._findClickedAnnotation(canvasPoint)
 
         if (clickedAnnotation) {
-            this._showExistingAnnotation(clickedAnnotation, screenPoint)
+            this.form.show(
+                {
+                    x: screenPoint.clientX + 10,
+                    y: screenPoint.clientY + 10,
+                },
+                clickedAnnotation
+            )
         } else {
             this._createNewAnnotation(canvasPoint, image.id, screenPoint)
         }
@@ -178,19 +192,28 @@ class AnnotationManager {
 
     _findClickedAnnotation(point) {
         const annotations = []
-        this.canvas.canvasManager.images.forEach((image) => {
+        const canvasManager = this.canvas.canvasManager
+
+        if (!canvasManager || !canvasManager.images) {
+            return null
+        }
+
+        canvasManager.images.forEach((image) => {
             if (image.annotations) {
                 annotations.push(...image.annotations)
             }
         })
 
-        const clickRadius = 10 / this.canvas.canvasManager.scale
+        const clickRadius = 20 / canvasManager.scale
 
-        return annotations.find((annotation) => {
+        const foundAnnotation = annotations.find((annotation) => {
             const dx = annotation.position.x - point.x
             const dy = annotation.position.y - point.y
-            return Math.sqrt(dx * dx + dy * dy) < clickRadius
+            const distance = Math.sqrt(dx * dx + dy * dy)
+            return distance < clickRadius
         })
+
+        return foundAnnotation
     }
 
     _showExistingAnnotation(annotation, screenPoint) {
@@ -229,12 +252,30 @@ class AnnotationManager {
             const targetImage = this.canvas.canvasManager.images.find(
                 (img) => img.id === this.currentImageId
             )
+
             if (targetImage) {
-                targetImage.addAnnotation(newAnnotation)
+                if (!targetImage.annotations) {
+                    targetImage.annotations = []
+                }
+                targetImage.annotations.push(newAnnotation)
             }
         }
 
         this.redraw()
+    }
+
+    _handleDelete(event) {
+        const { annotation } = event.detail
+        const targetImage = this.canvas.canvasManager.images.find(
+            (img) => img.id === annotation.imageId
+        )
+
+        if (targetImage && targetImage.annotations) {
+            targetImage.annotations = targetImage.annotations.filter(
+                (a) => a !== annotation
+            )
+            this.canvas.canvasManager.redrawCanvas()
+        }
     }
 
     updateAnnotationsById(annotationIds, { deltaX, deltaY }) {
@@ -274,9 +315,10 @@ class AnnotationManager {
 
     _getCanvasPoint(event) {
         const canvasManager = this.canvas.canvasManager
-        const rect = this.canvas.getBoundingClientRect()
+        if (!canvasManager) return { x: 0, y: 0 }
 
-        return {
+        const rect = this.canvas.getBoundingClientRect()
+        const point = {
             x:
                 (event.clientX - rect.left - canvasManager.viewportOffset.x) /
                 canvasManager.scale,
@@ -284,6 +326,7 @@ class AnnotationManager {
                 (event.clientY - rect.top - canvasManager.viewportOffset.y) /
                 canvasManager.scale,
         }
+        return point
     }
 }
 

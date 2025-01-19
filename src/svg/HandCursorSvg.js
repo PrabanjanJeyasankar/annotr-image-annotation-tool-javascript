@@ -9,7 +9,7 @@ function HandCursorSvg() {
             viewBox='0 0 24 24'
             class=''
             fill='none'
-            stroke-width='2'
+            stroke-width='4'
             stroke='currentColor'
             stroke-linecap='round'
             stroke-linejoin='round'>
