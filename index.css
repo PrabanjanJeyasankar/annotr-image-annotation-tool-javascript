@@ -8,16 +8,23 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* font-family: 'virgil'; */
     box-sizing: border-box;
     margin: 0 auto;
     min-width: 320px;
 
+    --color-dark-violet: #030064;
     --color-primary-violet: #6965db;
     --color-background-violet: #e0dfff;
-    --color-background-violet-light: #e0dfff75;
+    --color-background-violet-light: #f0efff;
     --color-surface-low: #e7e7e7;
     --color-primary-gray: #666;
     --color-secondary-gray: #898989;
+    --color-tertiary-gray: #c2c2c2;
+    --color-light-gray: #d1d1d1;
     --color-primary-red: #ff4343;
+
+    --color-icon-fill: #1b1b1f;
+    --shadow-menu-dock: 0px 0px 0.9310142993927002px 0px rgba(0, 0, 0, 0.17),
+        0px 0px 3.1270833015441895px 0px rgba(0, 0, 0, 0.08),
+        0px 7px 14px 0px rgba(0, 0, 0, 0.05);
 }

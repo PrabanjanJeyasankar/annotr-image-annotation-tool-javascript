@@ -1,16 +1,14 @@
-import ImageUploader from '../ImageUploader/ImageUploader'
+import AddImageIcon from '../../svg/AddImageSvg.js'
+import ImageUploader from '../ImageUploader/ImageUploader.js'
+import MenuDock from '../MenuDock/MenuDock.js'
 import styles from './Canvas.module.css'
-import CanvasManager from './CanvasManager'
+import CanvasManager from './CanvasManager.js'
 
 function InitializeCanvas(app) {
     app.style.overflow = 'hidden'
     app.style.position = 'fixed'
     app.style.width = '100%'
     app.style.height = '100%'
-
-    const styleSheet = document.createElement('style')
-    styleSheet.textContent = Object.values(styles).join('\n')
-    document.head.appendChild(styleSheet)
 
     const container = document.createElement('div')
     container.className = styles.canvasContainer
@@ -22,8 +20,11 @@ function InitializeCanvas(app) {
     container.appendChild(canvas)
 
     const uploadButton = document.createElement('button')
-    uploadButton.textContent = 'Upload Image'
     uploadButton.className = styles.uploadButton
+    uploadButton.innerHTML = `
+        ${AddImageIcon()}
+        <span>Upload Image</span>
+    `
     container.appendChild(uploadButton)
 
     const fileInput = document.createElement('input')
@@ -33,15 +34,29 @@ function InitializeCanvas(app) {
     fileInput.multiple = true
     container.appendChild(fileInput)
 
-    const canvasManager = new CanvasManager(canvas)
+    const scrollBackButton = document.createElement('button')
+    scrollBackButton.textContent = 'Scroll Back to Content'
+    scrollBackButton.className = styles.scrollBackButton
+    document.body.appendChild(scrollBackButton)
+
+    const canvasManager = new CanvasManager(canvas, scrollBackButton)
+
+    const menuDockElement = MenuDock(canvasManager)
+    app.appendChild(menuDockElement)
+
     const imageUploader = new ImageUploader(fileInput, canvasManager)
 
     uploadButton.addEventListener('click', () => fileInput.click())
 
-    window.addEventListener('resize', () => canvasManager.resizeCanvas())
+    scrollBackButton.addEventListener('click', () => {
+        canvasManager.scrollBackToContent()
+    })
+
+    window.addEventListener('resize', () => {
+        canvasManager.resizeCanvas()
+    })
 
     canvasManager.resizeCanvas()
-
     return canvas
 }
 

@@ -1,0 +1,36 @@
+/* MenuDock.module.css */
+.menuDock {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffffff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.6rem;
+    gap: 1rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: var(--shadow-menu-dock);
+    z-index: 100;
+}
+
+.toolButton {
+    background-color: transparent;
+    border: none;
+    color: var(--color-icon-fill);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0.6rem;
+    border-radius: 0.6rem;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.toolButton:hover {
+    background-color: var(--color-background-violet);
+}
+
+.toolButton:active {
+    background-color: var(--color-background-violet);
+    color: var(--color-dark-violet);
+}

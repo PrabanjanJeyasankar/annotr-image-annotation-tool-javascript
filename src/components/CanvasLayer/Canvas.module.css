@@ -1,0 +1,67 @@
+.canvasContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.canvas {
+    background: white;
+    touch-action: none;
+}
+
+.uploadButton {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.6rem 1rem;
+    background: var(--color-primary-violet);
+    color: white;
+    border: none;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.uploadButton:hover {
+    opacity: 0.7;
+}
+
+.fileInput {
+    display: none;
+}
+
+.scroll_back_button {
+    position: absolute;
+    bottom: 2rem;
+    font-size: 0.9rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 1.5rem;
+    background-color: var(--color-background-violet-light);
+    border: 1px solid var(--color-background-violet);
+    color: var(--color-primary-violet);
+    border-radius: 0.6rem;
+    cursor: pointer;
+    display: block;
+    z-index: 1000;
+    animation: slideUp 0.7s forwards;
+}
+
+@keyframes slideUp {
+    0% {
+        bottom: 0rem;
+        opacity: 0;
+    }
+    100% {
+        bottom: 2rem;
+        opacity: 1;
+    }
+}

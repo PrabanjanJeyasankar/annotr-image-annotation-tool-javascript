@@ -1,4 +1,5 @@
-import InitializeCanvas from "./components/canvas/canvas"
+import InitializeCanvas from "./components/CanvasLayer/CanvasLayer"
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('app')
