@@ -1,6 +1,7 @@
 * {
     box-sizing: border-box;
     margin: 0;
+    font-family: "Inter";
 }
 
 :root {
@@ -16,6 +17,7 @@
     --color-primary-violet: #6965db;
     --color-background-violet: #e0dfff;
     --color-background-violet-light: #f0efff;
+    --color-pale-violet: #e0dfff4d;
     --color-surface-low: #e7e7e7;
     --color-primary-gray: #666;
     --color-secondary-gray: #898989;
@@ -27,6 +29,13 @@
     --shadow-menu-dock: 0px 0px 0.9310142993927002px 0px rgba(0, 0, 0, 0.17),
         0px 0px 3.1270833015441895px 0px rgba(0, 0, 0, 0.08),
         0px 7px 14px 0px rgba(0, 0, 0, 0.05);
+}
+
+@font-face {
+    font-family: 'Virgil';
+    font-weight: 500;
+    font-style: normal;
+    src: url('./fonts/Virgil.woff2') format('woff2');
 }
 
 @font-face {

@@ -1,9 +1,10 @@
+import '../../assets/index.css'
 import AddImageIcon from '../../svg/AddImageSvg.js'
+import AnnotrLogoSvg from '../../svg/AnnotrLogoSvg.js'
 import ImageUploader from '../ImageUploader/ImageUploader.js'
 import MenuDock from '../MenuDock/MenuDock.js'
 import styles from './Canvas.module.css'
 import CanvasManager from './CanvasManager.js'
-import '../../assets/index.css'
 
 function InitializeCanvas(app) {
     app.style.overflow = 'hidden'
@@ -14,6 +15,18 @@ function InitializeCanvas(app) {
     const container = document.createElement('div')
     container.className = styles.canvasContainer
     app.appendChild(container)
+
+    const placeholder = document.createElement('div')
+    placeholder.className = styles.placeholder
+    placeholder.innerHTML = `
+        <div class="${styles.placeholderContent}">
+          <span>${AnnotrLogoSvg()}</span>
+           <h1>Annotr</h1>
+            <h3>Drop & Drop your images here</h3>
+            <p>and start annotating!</p>
+        </div>
+    `
+    container.appendChild(placeholder)
 
     const canvas = document.createElement('canvas')
     canvas.id = 'imageCanvas'
@@ -41,20 +54,56 @@ function InitializeCanvas(app) {
     document.body.appendChild(scrollBackButton)
 
     const canvasManager = new CanvasManager(canvas, scrollBackButton)
-
     const menuDockElement = MenuDock(canvasManager)
     app.appendChild(menuDockElement)
 
     const imageUploader = new ImageUploader(fileInput, canvasManager)
+    const originalAddImage = canvasManager.addImage.bind(canvasManager)
+    canvasManager.addImage = (...args) => {
+        placeholder.style.display = 'none'
+        return originalAddImage(...args)
+    }
+
+    container.addEventListener('dragover', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        container.classList.add(styles.dragOver)
+    })
+
+    container.addEventListener('dragleave', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        container.classList.remove(styles.dragOver)
+    })
+
+    container.addEventListener('drop', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        container.classList.remove(styles.dragOver)
+
+        const files = Array.from(e.dataTransfer.files).filter((file) =>
+            file.type.startsWith('image/')
+        )
+
+        if (files.length > 0) {
+            imageUploader.handleFileUpload({ target: { files } })
+            placeholder.style.display = 'none'
+        }
+    })
 
     uploadButton.addEventListener('click', () => fileInput.click())
-
     scrollBackButton.addEventListener('click', () => {
         canvasManager.scrollBackToContent()
     })
 
     window.addEventListener('resize', () => {
         canvasManager.resizeCanvas()
+    })
+
+    window.addEventListener('imageDeleted', () => {
+        if (!canvasManager.hasImages()) {
+            placeholder.style.display = 'flex'
+        }
     })
 
     canvasManager.resizeCanvas()

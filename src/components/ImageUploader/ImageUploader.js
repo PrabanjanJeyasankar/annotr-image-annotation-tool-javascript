@@ -1,6 +1,5 @@
 import ImageWithAnnotations from '../../components/Annotation/ImageWithAnnotation.js'
 
-
 class ImageUploader {
     constructor(fileInput, canvasManager) {
         this.fileInput = fileInput
@@ -19,6 +18,7 @@ class ImageUploader {
             const reader = new FileReader()
 
             reader.onload = (e) => {
+                const base64Data = e.target.result
                 const img = new Image()
 
                 img.onload = () => {
@@ -46,6 +46,8 @@ class ImageUploader {
                     const centerY =
                         this.canvasManager.canvas.height / 2 - newHeight / 2
 
+                    img.dataset.base64 = base64Data
+
                     const imageWithAnnotations = new ImageWithAnnotations(
                         img,
                         centerX / this.canvasManager.scale,
@@ -56,13 +58,27 @@ class ImageUploader {
 
                     this.canvasManager.images.push(imageWithAnnotations)
                     this.canvasManager.redrawCanvas()
+
+                    const uploadEvent = new CustomEvent('imageUploaded', {
+                        detail: {
+                            imageId: imageWithAnnotations.id,
+                            base64: base64Data,
+                        },
+                    })
+                    window.dispatchEvent(uploadEvent)
                 }
 
-                img.src = e.target.result
+                img.src = base64Data
             }
 
-            reader.readAsDataURL(file)
+            reader.readAsDataURL(file) 
         })
+    }
+    getImageBase64(imageId) {
+        const image = this.canvasManager.images.find(
+            (img) => img.id === imageId
+        )
+        return image ? image.base64Data : null
     }
 }
 

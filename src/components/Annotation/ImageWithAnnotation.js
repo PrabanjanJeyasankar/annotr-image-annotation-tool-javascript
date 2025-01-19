@@ -7,6 +7,7 @@ class ImageWithAnnotations {
         this.width = width
         this.height = height
         this.annotations = []
+        this.base64Data = img.dataset.base64
     }
 
     addAnnotation(annotation) {

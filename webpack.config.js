@@ -2,12 +2,11 @@ const { watch } = require('fs')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
-    favicon: "./src/assets/annotr_logo.svg",
+    favicon: './src/assets/annotr_logo.svg',
     template: path.resolve(__dirname, 'index.html'),
     filename: 'index.html',
     inject: 'body',
 })
-
 
 module.exports = {
     entry: './src/app.js',
@@ -39,6 +38,10 @@ module.exports = {
             {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
                 use: 'url-loader',
+            },
+            {
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                loader: 'file-loader',
             },
         ],
     },
