@@ -16,11 +16,19 @@ function InitializeCanvas(app) {
     container.className = styles.canvasContainer
     app.appendChild(container)
 
+    const logoContainer = document.createElement('div')
+    logoContainer.className = styles.logoContainer
+    logoContainer.innerHTML = `
+        <span>${AnnotrLogoSvg(26, 26)}</span>
+        <p class="${styles.logoText}">Annotr</p>
+    `
+    container.appendChild(logoContainer)
+
     const placeholder = document.createElement('div')
     placeholder.className = styles.placeholder
     placeholder.innerHTML = `
         <div class="${styles.placeholderContent}">
-          <span>${AnnotrLogoSvg()}</span>
+          <span>${AnnotrLogoSvg(140, 140)}</span>
            <h1>Annotr</h1>
             <h3>Drop & Drop your images here</h3>
             <p>and start annotating!</p>

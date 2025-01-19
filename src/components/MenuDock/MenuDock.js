@@ -5,11 +5,6 @@ import MousePointerSvg from '../../svg/MousePointerSvg'
 import styles from './MenuDock.module.css'
 
 function MenuDock(canvasManager) {
-    if (!canvasManager) {
-        console.error('CanvasManager is required for MenuDock')
-        return document.createElement('div')
-    }
-
     const dock = document.createElement('div')
     dock.className = styles.menuDock
 

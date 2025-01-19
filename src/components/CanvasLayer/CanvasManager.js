@@ -17,20 +17,15 @@ class CanvasManager {
 
         this.activeTool = 'arrow'
         this.setActiveTool('arrow')
-        this.updateCursor()
 
-        this.supportedTools = this.supportedTools || [
-            'arrow',
-            'hand',
-            'annotation',
-            'erase',
-        ]
+        this.supportedTools = ['arrow', 'hand', 'annotation', 'erase']
 
         this.canvas.canvasManager = this
         this.annotationManager = new AnnotationManager(this.canvas, this)
 
         this._setupEventListeners()
         this.checkButtonVisibility()
+        this.updateCursor()
     }
 
     hasImages() {
@@ -70,6 +65,8 @@ class CanvasManager {
             this.annotationManager.isDraggingAnnotation = false
             this.annotationManager.selectedAnnotation = null
         }
+
+        this.updateCursor()
     }
 
     updateCursor() {
@@ -86,9 +83,12 @@ class CanvasManager {
                 //     CustomArrowCursorSvg.arrow
                 // )}") 12 12, auto`
                 break
-            case 'hand':
-                // this.canvas.style.cursor = 'grab'
-                this.canvas.style.cursor = this.isDragging ? 'grabbing' : 'grab'
+             case 'hand':
+                // Update cursor based on whether we're over an image
+                const mouseX = this.prevX || 0
+                const mouseY = this.prevY || 0
+                const imageUnderCursor = this.getImageAtPosition(mouseX, mouseY)
+                this.canvas.style.cursor = imageUnderCursor || this.isDragging ? 'grab' : 'grab'
                 break
             case 'annotation':
                 this.canvas.style.cursor = 'crosshair'
@@ -97,7 +97,7 @@ class CanvasManager {
                 // this.canvas.style.cursor = `url("data:image/svg+xml,${encodeURIComponent(
                 //     CustomCursorsSvg.eraser
                 // )}") 12 12, auto`
-                this.canvas.style.cursor = 'no-drop'
+                this.canvas.style.cursor = 'pointer'
                 break
             default:
                 this.canvas.style.cursor = 'default'

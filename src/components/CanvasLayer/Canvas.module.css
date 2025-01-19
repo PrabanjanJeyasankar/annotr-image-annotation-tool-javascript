@@ -8,6 +8,23 @@
     overflow: hidden;
 }
 
+.logoContainer {
+    position: absolute;
+    top: 1.5rem;
+    left: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    z-index: 10;
+    user-select: none;
+}
+
+.logoText {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--color-primary-violet);
+}
+
 .canvas {
     background: white;
     touch-action: none;
@@ -94,13 +111,13 @@
     margin: 2.5rem 0 0.5rem 0;
     font-size: 1.1rem;
     font-weight: 400;
-    color: var(--color-primary-violet)
+    color: var(--color-primary-violet);
 }
 
 .placeholderContent p {
     margin-top: 0.5rem;
     font-size: 0.9rem;
-    color: var(--color-primary-violet)
+    color: var(--color-primary-violet);
 }
 
 .dragOver {

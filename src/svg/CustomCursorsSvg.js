@@ -1,4 +1,4 @@
-const CustomCursorsSvg = {
+export const CustomCursorsSvg = {
     arrow: `data:image/svg+xml,${encodeURIComponent(`
        <svg
             width='26'
@@ -80,4 +80,7 @@ const CustomCursorsSvg = {
     `)}`,
 }
 
-export default CustomCursorsSvg
+export const encodeSvgForCss = (svg) => {
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+

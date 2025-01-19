@@ -3,10 +3,14 @@
     padding: 8px;
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
+    max-width: 300px;
     border-radius: 4px;
     font-size: 14px;
     pointer-events: none;
     z-index: 1000;
+    overflow: hidden;
+    white-space: wrap;
+    text-overflow: ellipsis;
 }
 
 .moveCursor {
