@@ -1,0 +1,39 @@
+.annotationTooltip {
+    position: fixed;
+    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+
+.moveCursor {
+    cursor: move;
+}
+
+.grabbingCursor {
+    cursor: grabbing;
+}
+
+.annotationWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.annotationDot {
+    width: 10px;
+    height: 10px;
+    color: var(--color-primary-violet);
+    background-color: #007aff;
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s ease;
+}
+
+.annotationDot:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+}

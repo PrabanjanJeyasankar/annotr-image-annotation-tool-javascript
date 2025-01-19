@@ -3,6 +3,7 @@ import EraserSvg from '../../svg/EraserSvg'
 import HandCursorSvg from '../../svg/HandCursorSvg'
 import MousePointerSvg from '../../svg/MousePointerSvg'
 import styles from './MenuDock.module.css'
+
 function MenuDock(canvasManager) {
     if (!canvasManager) {
         console.error('CanvasManager is required for MenuDock')
@@ -20,6 +21,15 @@ function MenuDock(canvasManager) {
     arrowButton.classList.add(styles.active)
 
     const manager = canvasManager
+    const tooltip = createTooltip()
+
+    dock.appendChild(arrowButton)
+    dock.appendChild(handButton)
+    dock.appendChild(annotationButton)
+    dock.appendChild(deleteButton)
+    dock.appendChild(tooltip) 
+
+    tooltip.style.display = 'block'
 
     arrowButton.onclick = function () {
         setActiveButton(arrowButton, [
@@ -29,6 +39,7 @@ function MenuDock(canvasManager) {
             deleteButton,
         ])
         manager.setActiveTool('arrow')
+        tooltip.style.display = 'block'
     }
 
     handButton.onclick = function () {
@@ -39,15 +50,34 @@ function MenuDock(canvasManager) {
             deleteButton,
         ])
         manager.setActiveTool('hand')
+        tooltip.style.display = 'none' 
     }
 
-    dock.appendChild(arrowButton)
-    dock.appendChild(handButton)
-    dock.appendChild(annotationButton)
-    dock.appendChild(deleteButton)
+    annotationButton.onclick = function () {
+        setActiveButton(annotationButton, [
+            arrowButton,
+            handButton,
+            annotationButton,
+            deleteButton,
+        ])
+        manager.setActiveTool('annotation')
+        tooltip.style.display = 'block' 
+    }
+
+    deleteButton.onclick = function () {
+        setActiveButton(deleteButton, [
+            arrowButton,
+            handButton,
+            annotationButton,
+            deleteButton,
+        ])
+        manager.setActiveTool('delete')
+        tooltip.style.display = 'block' 
+    }
 
     applyHoverEffect([arrowButton, handButton, annotationButton, deleteButton])
 
+    
     return dock
 }
 
@@ -64,6 +94,14 @@ function createButton(iconFn, title) {
     button.innerHTML = iconFn()
     button.title = title
     return button
+}
+
+function createTooltip() {
+    const tooltip = document.createElement('div')
+    tooltip.className = styles.tooltip
+    tooltip.innerText =
+        'Use the Hand Tool (Move Canvas) to drag images/annotations!'
+    return tooltip
 }
 
 function applyHoverEffect(buttons) {

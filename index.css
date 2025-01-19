@@ -11,7 +11,7 @@
     box-sizing: border-box;
     margin: 0 auto;
     min-width: 320px;
-
+    font-family: 'Inter';
     --color-dark-violet: #030064;
     --color-primary-violet: #6965db;
     --color-background-violet: #e0dfff;
@@ -19,7 +19,7 @@
     --color-surface-low: #e7e7e7;
     --color-primary-gray: #666;
     --color-secondary-gray: #898989;
-    --color-tertiary-gray: #c2c2c2;
+    --color-tertiary-gray: #a6a6a6;
     --color-light-gray: #d1d1d1;
     --color-primary-red: #ff4343;
 
@@ -27,4 +27,67 @@
     --shadow-menu-dock: 0px 0px 0.9310142993927002px 0px rgba(0, 0, 0, 0.17),
         0px 0px 3.1270833015441895px 0px rgba(0, 0, 0, 0.08),
         0px 7px 14px 0px rgba(0, 0, 0, 0.05);
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 100;
+    font-style: normal;
+    src: url('./assets/fonts/Inter-Thin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 200;
+    font-style: normal;
+    src: url('./assets/fonts/Inter-ExtraLight.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 300;
+    font-style: normal;
+    src: url('./assets/fonts/Inter-Light.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    font-style: normal;
+    src: url('./assets/fonts/Inter-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 500;
+    font-style: normal;
+    src: url('./assets/fonts/Inter-Medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 600;
+    font-style: normal;
+    src: url('./assets/fonts/Inter-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 700;
+    font-style: normal;
+    src: url('./assets/fonts/Inter-Bold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 800;
+    font-style: normal;
+    src: url('./assets/fonts/Inter-ExtraBold.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 900;
+    font-style: normal;
+    src: url('./assets/fonts/Inter-Black.woff2') format('woff2');
 }

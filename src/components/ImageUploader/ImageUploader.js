@@ -1,3 +1,6 @@
+import ImageWithAnnotations from '../../components/Annotation/ImageWithAnnotation.js'
+
+
 class ImageUploader {
     constructor(fileInput, canvasManager) {
         this.fileInput = fileInput
@@ -43,14 +46,17 @@ class ImageUploader {
                     const centerY =
                         this.canvasManager.canvas.height / 2 - newHeight / 2
 
-                    this.canvasManager.images.push({
+                    // Create new ImageWithAnnotations instance
+                    const imageWithAnnotations = new ImageWithAnnotations(
                         img,
-                        x: centerX / this.canvasManager.scale,
-                        y: centerY / this.canvasManager.scale,
-                        width: newWidth,
-                        height: newHeight,
-                    })
+                        centerX / this.canvasManager.scale,
+                        centerY / this.canvasManager.scale,
+                        newWidth,
+                        newHeight
+                    )
 
+                    // Add to canvas manager's images array
+                    this.canvasManager.images.push(imageWithAnnotations)
                     this.canvasManager.redrawCanvas()
                 }
 

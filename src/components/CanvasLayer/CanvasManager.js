@@ -1,3 +1,6 @@
+import CustomArrowCursorSvg from '../../svg/CustomArrowCursorSvg'
+import AnnotationManager from '../Annotation/AnnotationManager'
+
 class CanvasManager {
     constructor(canvasElement, scrollBackButton) {
         this.canvas = canvasElement
@@ -10,38 +13,81 @@ class CanvasManager {
         this.isImageDragging = false
         this.selectedImage = null
         this.startDragOffset = { x: 0, y: 0 }
+        this.prevX = null
+        this.prevY = null
 
         this.activeTool = 'arrow'
         this.setActiveTool('arrow')
+        this.updateCursor()
 
+        this.canvas.canvasManager = this
+        this.annotationManager = new AnnotationManager(this.canvas, this)
+
+        this._setupEventListeners()
+        this.checkButtonVisibility()
+    }
+
+    hasImages() {
+        return this.images.length > 0
+    }
+
+    addImage(img, id, x, y, width, height) {
+        const imageWithAnnotations = new ImageWithAnnotations(
+            img,
+            id,
+            x,
+            y,
+            width,
+            height
+        )
+        this.images.push(imageWithAnnotations)
+        return imageWithAnnotations
+    }
+
+    _setupEventListeners() {
         this.canvas.addEventListener('wheel', this.onWheel.bind(this))
         this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this))
         this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this))
         this.canvas.addEventListener('mouseup', this.onMouseUp.bind(this))
-        this.canvas.addEventListener('mouseleave', this.onMouseUp.bind(this))
-
-        this.checkButtonVisibility()
+        this.canvas.addEventListener('mouseleave', this.onMouseLeave.bind(this))
     }
 
     setActiveTool(tool) {
         this.activeTool = tool
         this.updateCursor()
+
+        this.isDragging = false
+        this.isImageDragging = false
+        this.selectedImage = null
+
+        if (this.annotationManager) {
+            this.annotationManager.isDraggingAnnotation = false
+            this.annotationManager.selectedAnnotation = null
+        }
     }
 
     updateCursor() {
         if (this.isDragging && this.activeTool === 'hand') {
             this.canvas.style.cursor = 'grabbing'
-        } else {
-            switch (this.activeTool) {
-                case 'arrow':
-                    this.canvas.style.cursor = 'default'
-                    break
-                case 'hand':
-                    this.canvas.style.cursor = 'grab'
-                    break
-                default:
-                    this.canvas.style.cursor = 'default'
-            }
+            return
+        }
+
+        switch (this.activeTool) {
+            case 'arrow':
+                // this.canvas.style.cursor = `url(${CustomArrowCursorSvg.arrow}) 12 12, auto`
+                // this.canvas.style.cursor = `arrow`
+                this.canvas.style.cursor = `url("data:image/svg+xml,${encodeURIComponent(
+                    CustomArrowCursorSvg.arrow
+                )}") 12 12, auto`
+                break
+            case 'hand':
+                this.canvas.style.cursor = 'grab'
+                break
+            case 'annotation':
+                this.canvas.style.cursor = 'crosshair'
+                break
+            default:
+                this.canvas.style.cursor = 'default'
         }
     }
 
@@ -56,6 +102,11 @@ class CanvasManager {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         this.createGrid()
         this.drawImages()
+
+        this.annotationManager.redraw({
+            scale: this.scale,
+            offset: this.viewportOffset,
+        })
     }
 
     createGrid() {
@@ -127,64 +178,97 @@ class CanvasManager {
     }
 
     onMouseMove(e) {
-        if (this.currentTool === 'arrow') {
-            return
+        const annotationHandled = this.annotationManager.handleMouseMove(e)
+        if (annotationHandled) return
+
+        if (this.prevX === null || this.prevY === null) return
+
+        if (this.activeTool === 'hand') {
+            if (this.isImageDragging && this.selectedImage) {
+                const deltaX = (e.clientX - this.prevX) / this.scale
+                const deltaY = (e.clientY - this.prevY) / this.scale
+
+                // Move image and its annotations together
+                this.selectedImage.moveBy(deltaX, deltaY)
+                this.redrawCanvas()
+            } else if (this.isDragging) {
+                this.viewportOffset.x += e.clientX - this.prevX
+                this.viewportOffset.y += e.clientY - this.prevY
+                this.redrawCanvas()
+            }
         }
 
-        if (this.isImageDragging && this.selectedImage) {
-            this.selectedImage.x =
-                (e.clientX - this.startDragOffset.x - this.viewportOffset.x) /
-                this.scale
-            this.selectedImage.y =
-                (e.clientY - this.startDragOffset.y - this.viewportOffset.y) /
-                this.scale
+        this.prevX = e.clientX
+        this.prevY = e.clientY
+    }
 
-            requestAnimationFrame(this.redrawCanvas.bind(this))
-        } else if (this.isDragging) {
-            this.viewportOffset.x = e.clientX - this.startDragOffset.x
-            this.viewportOffset.y = e.clientY - this.startDragOffset.y
-            requestAnimationFrame(this.redrawCanvas.bind(this))
+    addAnnotationToImage(imageId, annotationId) {
+        if (!this.imageAnnotations.has(imageId)) {
+            this.imageAnnotations.set(imageId, new Set())
         }
+        this.imageAnnotations.get(imageId).add(annotationId)
+    }
 
-        this.checkButtonVisibility()
+    removeAnnotationFromImage(imageId, annotationId) {
+        const imageAnnotations = this.imageAnnotations.get(imageId)
+        if (imageAnnotations) {
+            imageAnnotations.delete(annotationId)
+        }
     }
 
     onMouseDown(e) {
-        if (this.currentTool === 'arrow') {
+        this.prevX = e.clientX
+        this.prevY = e.clientY
+
+        const annotationHandled = this.annotationManager.handleMouseDown(e)
+        if (annotationHandled) return
+
+        if (this.activeTool === 'annotation') {
+            const clickedImage = this.getImageAtPosition(e.clientX, e.clientY)
+            if (clickedImage) {
+                const canvasCoords = this.convertToCanvasCoordinates(
+                    e.clientX,
+                    e.clientY
+                )
+                this.annotationManager.handleImageClick(
+                    clickedImage,
+                    canvasCoords,
+                    {
+                        clientX: e.clientX,
+                        clientY: e.clientY,
+                    }
+                )
+            }
             return
         }
 
         if (this.activeTool === 'hand') {
             const image = this.getImageAtPosition(e.clientX, e.clientY)
-
             if (image) {
                 this.isImageDragging = true
                 this.selectedImage = image
-                this.startDragOffset = {
-                    x:
-                        e.clientX -
-                        (image.x * this.scale + this.viewportOffset.x),
-                    y:
-                        e.clientY -
-                        (image.y * this.scale + this.viewportOffset.y),
-                }
                 this.canvas.style.cursor = 'grabbing'
             } else {
                 this.isDragging = true
-                this.startDragOffset = {
-                    x: e.clientX - this.viewportOffset.x,
-                    y: e.clientY - this.viewportOffset.y,
-                }
                 this.canvas.style.cursor = 'grabbing'
             }
         }
     }
 
-    onMouseUp() {
+    onMouseUp(e) {
+        const annotationHandled = this.annotationManager.handleMouseUp(e)
+        if (annotationHandled) return
+
         this.isDragging = false
         this.isImageDragging = false
         this.selectedImage = null
         this.updateCursor()
+        this.prevX = null
+        this.prevY = null
+    }
+
+    onMouseLeave(e) {
+        this.onMouseUp(e)
     }
 
     getImageAtPosition(x, y) {
@@ -244,6 +328,14 @@ class CanvasManager {
         this.redrawCanvas()
 
         this.checkButtonVisibility()
+    }
+
+    convertToCanvasCoordinates(clientX, clientY) {
+        const rect = this.canvas.getBoundingClientRect()
+        return {
+            x: (clientX - rect.left - this.viewportOffset.x) / this.scale,
+            y: (clientY - rect.top - this.viewportOffset.y) / this.scale,
+        }
     }
 }
 
