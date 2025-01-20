@@ -1,23 +1,34 @@
 class AnnotationRenderer {
     constructor(context) {
         this.ctx = context
-        this.dotRadius = 8
-        this.dotColor = '#6965db'
+        this.outerDotRadius = 14
+        this.innerDotRadius = 7
+        this.outerDotColor = '#ffdfdf'
+        this.innerDotColor = '#ff4343'
     }
 
     setStyle(options = {}) {
-        this.dotRadius = options.radius || this.dotRadius
-        this.dotColor = options.color || this.dotColor
+        this.outerDotRadius = options.outerRadius || this.outerDotRadius
+        this.innerDotRadius = options.innerRadius || this.innerDotRadius
+        this.outerDotColor = options.outerColor || this.outerDotColor
+        this.innerDotColor = options.innerColor || this.innerDotColor
     }
 
     drawAnnotation(annotation, transform) {
         const { x, y } = this._transformPoint(annotation.position, transform)
 
         this.ctx.save()
+
         this.ctx.beginPath()
-        this.ctx.arc(x, y, this.dotRadius, 0, Math.PI * 2)
-        this.ctx.fillStyle = this.dotColor
+        this.ctx.arc(x, y, this.outerDotRadius, 0, Math.PI * 2)
+        this.ctx.fillStyle = this.outerDotColor
         this.ctx.fill()
+
+        this.ctx.beginPath()
+        this.ctx.arc(x, y, this.innerDotRadius, 0, Math.PI * 2)
+        this.ctx.fillStyle = this.innerDotColor
+        this.ctx.fill()
+
         this.ctx.restore()
     }
 

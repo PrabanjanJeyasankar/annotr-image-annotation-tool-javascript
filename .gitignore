@@ -3,6 +3,7 @@
 
 # Build output
 /build/
+/dist/
 
 # Webpack bundle
 
