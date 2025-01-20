@@ -53,18 +53,6 @@ class AnnotationManager {
         const canvasPoint = this._getCanvasPoint(event)
         const hoveredAnnotation = this._findClickedAnnotation(canvasPoint)
 
-        if (hoveredAnnotation && !this.isDraggingAnnotation) {
-            this.canvas.style.cursor = 'grab'
-
-            this.tooltip.textContent = hoveredAnnotation.content
-            this.tooltip.style.display = 'block'
-            this.tooltip.style.left = `${event.clientX + 10}px`
-            this.tooltip.style.top = `${event.clientY + 10}px`
-        } else if (!this.isDraggingAnnotation) {
-            this.canvas.style.cursor = 'default'
-            this.tooltip.style.display = 'none'
-        }
-
         if (this.isDraggingAnnotation && this.selectedAnnotation) {
             event.preventDefault()
             event.stopPropagation()
@@ -108,6 +96,19 @@ class AnnotationManager {
 
             return true
         }
+        else if (hoveredAnnotation) {
+            this.canvas.style.cursor = 'grab'
+
+            this.tooltip.textContent = hoveredAnnotation.content
+            this.tooltip.style.display = 'block'
+            this.tooltip.style.left = `${event.clientX + 10}px`
+            this.tooltip.style.top = `${event.clientY + 10}px`
+        } else {
+            this.canvas.style.cursor = 'default'
+            this.tooltip.style.display = 'none'
+        }
+
+        return false
     }
 
     handleMouseDown(event) {
