@@ -25,6 +25,8 @@
     --color-light-gray: #d1d1d1;
     --color-primary-red: #ff4343;
 
+    --color-alert-background: rgba(0, 0, 0, 0.7);
+    --color-drag-hover-background:rgba(0, 0, 0, 0.1);
     --color-icon-fill: #1b1b1f;
     --shadow-menu-dock: 0px 0px 0.9310142993927002px 0px rgba(0, 0, 0, 0.17),
         0px 0px 3.1270833015441895px 0px rgba(0, 0, 0, 0.08),

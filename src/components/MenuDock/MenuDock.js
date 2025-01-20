@@ -26,6 +26,12 @@ function MenuDock(canvasManager) {
 
     tooltip.style.display = 'block'
 
+    const updateToolAndCursor = (tool, cursor) => {
+        manager.setActiveTool(tool)
+        manager.canvas.style.setProperty('cursor', cursor, 'important')
+        manager.defaultCursor = cursor
+    }
+
     arrowButton.onclick = function () {
         setActiveButton(arrowButton, [
             arrowButton,
@@ -33,7 +39,7 @@ function MenuDock(canvasManager) {
             annotationButton,
             deleteButton,
         ])
-        manager.setActiveTool('arrow')
+        updateToolAndCursor('arrow', 'default')
         tooltip.style.display = 'block'
     }
 
@@ -44,7 +50,7 @@ function MenuDock(canvasManager) {
             annotationButton,
             deleteButton,
         ])
-        manager.setActiveTool('hand')
+        updateToolAndCursor('hand', 'grab')
         tooltip.style.display = 'none'
     }
 
@@ -55,7 +61,7 @@ function MenuDock(canvasManager) {
             annotationButton,
             deleteButton,
         ])
-        manager.setActiveTool('annotation')
+        updateToolAndCursor('annotation', 'crosshair')
         tooltip.style.display = 'block'
     }
 
@@ -66,7 +72,7 @@ function MenuDock(canvasManager) {
             annotationButton,
             deleteButton,
         ])
-        manager.setActiveTool('erase')
+        updateToolAndCursor('erase', 'pointer')
         tooltip.style.display = 'block'
     }
 

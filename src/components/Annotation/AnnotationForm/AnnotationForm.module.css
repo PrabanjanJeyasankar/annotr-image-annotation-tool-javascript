@@ -33,9 +33,9 @@
     outline: none;
 }
 
-.annotationTextarea[readonly] {
+/* .annotationTextarea[readonly] {
     cursor: default;
-}
+} */
 
 .annotationControls {
     display: flex;

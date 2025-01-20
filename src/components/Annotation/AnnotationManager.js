@@ -15,7 +15,9 @@ class AnnotationManager {
         this.isDraggingAnnotation = false
         this.selectedAnnotation = null
         this.dragOffset = { x: 0, y: 0 }
+        this.currentMousePosition = { x: 0, y: 0 }
         this._setupEventListeners()
+        this._maintainCursor = this._maintainCursor.bind(this)
     }
 
     _setupEventListeners() {
@@ -52,6 +54,7 @@ class AnnotationManager {
 
         const canvasPoint = this._getCanvasPoint(event)
         const hoveredAnnotation = this._findClickedAnnotation(canvasPoint)
+        this.currentMousePosition = canvasPoint
 
         if (this.isDraggingAnnotation && this.selectedAnnotation) {
             event.preventDefault()
@@ -95,20 +98,34 @@ class AnnotationManager {
             }
 
             return true
-        }
-        else if (hoveredAnnotation) {
+        } else if (hoveredAnnotation) {
             this.canvas.style.cursor = 'grab'
-
             this.tooltip.textContent = hoveredAnnotation.content
             this.tooltip.style.display = 'block'
             this.tooltip.style.left = `${event.clientX + 10}px`
             this.tooltip.style.top = `${event.clientY + 10}px`
         } else {
-            this.canvas.style.cursor = 'default'
+            this._maintainCursor()
             this.tooltip.style.display = 'none'
         }
-
         return false
+    }
+
+    _maintainCursor() {
+        const canvasManager = this.canvas.canvasManager
+        if (!canvasManager) return
+
+        if (canvasManager.activeTool === 'annotation') {
+            const clickedImage = canvasManager.getImageAtPosition(
+                this.currentMousePosition.x,
+                this.currentMousePosition.y
+            )
+            this.canvas.style.cursor = clickedImage
+                ? 'crosshair'
+                : 'not-allowed'
+        } else {
+            this.canvas.style.cursor = 'default'
+        }
     }
 
     handleMouseDown(event) {
@@ -163,7 +180,9 @@ class AnnotationManager {
     }
 
     handleImageClick(image, canvasPoint, screenPoint) {
-        if (!image) return
+        if (!image) {
+            return
+        }
 
         const clickedAnnotation = this._findClickedAnnotation(canvasPoint)
 

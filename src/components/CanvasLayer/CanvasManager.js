@@ -1,4 +1,5 @@
 import AnnotationManager from '../Annotation/AnnotationManager'
+import styles from './Canvas.module.css'
 
 class CanvasManager {
     constructor(canvasElement, scrollBackButton) {
@@ -17,15 +18,18 @@ class CanvasManager {
 
         this.activeTool = 'arrow'
         this.setActiveTool('arrow')
+        this.defaultCursor = 'default'
 
         this.supportedTools = ['arrow', 'hand', 'annotation', 'erase']
 
         this.canvas.canvasManager = this
         this.annotationManager = new AnnotationManager(this.canvas, this)
 
+        this.messageTimeout = null
+        this.messageEl = this._createMessageElement()
+
         this._setupEventListeners()
         this.checkButtonVisibility()
-        this.updateCursor()
     }
 
     hasImages() {
@@ -53,38 +57,33 @@ class CanvasManager {
         this.canvas.addEventListener('mouseleave', this.onMouseLeave.bind(this))
     }
 
+    _createMessageElement() {
+        const el = document.createElement('div')
+        el.className = styles.messageElement
+        document.body.appendChild(el)
+        return el
+    }
+
+    showMessage(message, duration = 3000) {
+        if (this.messageTimeout) {
+            clearTimeout(this.messageTimeout)
+        }
+        this.messageEl.textContent = message
+        this.messageEl.style.display = 'block'
+        this.messageTimeout = setTimeout(() => {
+            this.messageEl.style.display = 'none'
+        }, duration)
+    }
+
     setActiveTool(tool) {
         this.activeTool = tool
-        this.updateCursor()
-
         this.isDragging = false
         this.isImageDragging = false
         this.selectedImage = null
 
-        if (this.annotationManager) {
-            this.annotationManager.isDraggingAnnotation = false
-            this.annotationManager.selectedAnnotation = null
-        }
-
-        this.updateCursor()
-    }
-
-    updateCursor() {
-        if (this.isDragging && this.activeTool === 'hand') {
-            this.canvas.style.cursor = 'grabbing'
-            return
-        }
-
-        switch (this.activeTool) {
-            case 'arrow':
-                this.canvas.style.cursor = 'arrow'
-                break
+        switch (tool) {
             case 'hand':
-                const mouseX = this.prevX || 0
-                const mouseY = this.prevY || 0
-                const imageUnderCursor = this.getImageAtPosition(mouseX, mouseY)
-                this.canvas.style.cursor =
-                    imageUnderCursor || this.isDragging ? 'grab' : 'grab'
+                this.canvas.style.cursor = 'grab'
                 break
             case 'annotation':
                 this.canvas.style.cursor = 'crosshair'
@@ -92,9 +91,35 @@ class CanvasManager {
             case 'erase':
                 this.canvas.style.cursor = 'pointer'
                 break
+            case 'arrow':
             default:
                 this.canvas.style.cursor = 'default'
         }
+
+        if (this.annotationManager) {
+            this.annotationManager.isDraggingAnnotation = false
+            this.annotationManager.selectedAnnotation = null
+        }
+    }
+
+    setToolCursor(tool) {
+        switch (tool) {
+            case 'arrow':
+                this.lastToolCursor = 'default'
+                break
+            case 'hand':
+                this.lastToolCursor = 'grab'
+                break
+            case 'annotation':
+                this.lastToolCursor = 'crosshair'
+                break
+            case 'erase':
+                this.lastToolCursor = 'pointer'
+                break
+            default:
+                this.lastToolCursor = 'default'
+        }
+        this.canvas.style.cursor = this.lastToolCursor
     }
 
     resizeCanvas() {
@@ -217,11 +242,15 @@ class CanvasManager {
                     }
                 }
 
+                this.canvas.style.cursor = 'grabbing'
                 this.redrawCanvas()
             } else if (this.isDragging) {
                 this.viewportOffset.x += e.clientX - this.prevX
                 this.viewportOffset.y += e.clientY - this.prevY
+                this.canvas.style.cursor = 'grabbing'
                 this.redrawCanvas()
+            } else {
+                this.canvas.style.cursor = 'grab'
             }
         }
 
@@ -255,27 +284,31 @@ class CanvasManager {
             }
         }
 
-        const annotationHandled = this.annotationManager.handleMouseDown(e)
-        if (annotationHandled) return
-
         if (this.activeTool === 'annotation') {
             const clickedImage = this.getImageAtPosition(e.clientX, e.clientY)
-            if (clickedImage) {
-                const canvasCoords = this.convertToCanvasCoordinates(
-                    e.clientX,
-                    e.clientY
+            if (!clickedImage) {
+                this.showMessage(
+                    'Please add annotations to an existing image or import a new one to get started.'
                 )
-                this.annotationManager.handleImageClick(
-                    clickedImage,
-                    canvasCoords,
-                    {
-                        clientX: e.clientX,
-                        clientY: e.clientY,
-                    }
-                )
+                return
             }
+            const canvasCoords = this.convertToCanvasCoordinates(
+                e.clientX,
+                e.clientY
+            )
+            this.annotationManager.handleImageClick(
+                clickedImage,
+                canvasCoords,
+                {
+                    clientX: e.clientX,
+                    clientY: e.clientY,
+                }
+            )
             return
         }
+
+        const annotationHandled = this.annotationManager.handleMouseDown(e)
+        if (annotationHandled) return
 
         if (this.activeTool === 'hand') {
             const image = this.getImageAtPosition(e.clientX, e.clientY)
@@ -297,7 +330,21 @@ class CanvasManager {
         this.isDragging = false
         this.isImageDragging = false
         this.selectedImage = null
-        this.updateCursor()
+
+        switch (this.activeTool) {
+            case 'hand':
+                this.canvas.style.cursor = 'grab'
+                break
+            case 'annotation':
+                this.canvas.style.cursor = 'crosshair'
+                break
+            case 'erase':
+                this.canvas.style.cursor = 'pointer'
+                break
+            default:
+                this.canvas.style.cursor = 'default'
+        }
+
         this.prevX = null
         this.prevY = null
     }

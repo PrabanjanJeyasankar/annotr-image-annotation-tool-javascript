@@ -13,13 +13,13 @@
     text-overflow: ellipsis;
 }
 
-.moveCursor {
+/* .moveCursor {
     cursor: move;
 }
 
 .grabbingCursor {
     cursor: grabbing;
-}
+} */
 
 .annotationWrapper {
     position: relative;
